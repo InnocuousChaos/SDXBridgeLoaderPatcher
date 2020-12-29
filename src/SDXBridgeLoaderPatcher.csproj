@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.3" />
+    <PackageReference Include="BepInEx.BaseLib" Version="5.4.4" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.4" />
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.9.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Mono.Cecil" Version="0.11.3" />
+    <PackageReference Include="UnityEngine.Core" Version="5.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DMT">
+      <HintPath>..\..\..\..\Documents\DMT\DMT.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
