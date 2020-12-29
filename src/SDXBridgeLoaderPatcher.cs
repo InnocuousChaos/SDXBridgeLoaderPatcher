@@ -13,14 +13,8 @@ public static class SDXBridgeLoaderPatcher
 {
     public static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource(nameof(SDXBridgeLoaderPatcher));
 
-
     // List of assemblies to patch
     public static IEnumerable<string> TargetDLLs { get; } = new[] { "Assembly-CSharp.dll" };
-
-    public static void Initialize()
-    {
-    }
-
 
     public static void Patch(AssemblyDefinition assembly)
     {
@@ -28,16 +22,9 @@ public static class SDXBridgeLoaderPatcher
         HookSDX(assembly);
     }
 
-    public static void Finish()
-    {
-    }
-
-
     private static void HookSDX(AssemblyDefinition gameassembly)
     {
-        var assemblies = new List<Assembly>();
-        var modPath = @"C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die\Mods";
-            //Application.platform != RuntimePlatform.OSXPlayer ? (Application.dataPath + "/../Mods") : (Application.dataPath + "/../../Mods");
+        var modPath = BepInEx.Paths.GameRootPath + @"\Mods";
 
         if (Directory.Exists(modPath))
         {
@@ -56,8 +43,8 @@ public static class SDXBridgeLoaderPatcher
                         foreach (var file in Directory.GetFiles(patchscripts, "*.dll"))
                         {
                             Logger.LogInfo("DLL found: " + file);
-                            var assembly = AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(file));
-                            var instances = from t in assembly.GetTypes()
+                            var modassembly = AssemblyDefinition.ReadAssembly(file);
+                            var instances = from t in AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(file)).GetTypes()
                                             where t.GetInterfaces().Contains(typeof(IPatcherMod))
                                                      && t.GetConstructor(Type.EmptyTypes) != null
                                             select Activator.CreateInstance(t) as IPatcherMod;
@@ -66,12 +53,14 @@ public static class SDXBridgeLoaderPatcher
                             {
                                 instance.Patch(gameassembly.MainModule);
                             }
+                            //Pulled from DMT, but causes BepInex to not log anything, not sure it's even applying. Not sure the intended purpose of this.
                             //foreach (var instance in instances)
                             //{
-                            //    instance.Link(gameassembly.MainModule, patchassembly.MainModule);
+                            //    instance.Link(gameassembly.MainModule, modassembly.MainModule);
                             //}
+                            //Pulled from DMT LinkedAssemblyTask, but not sure what they do or how to implement in this context yet.
                             //gameassembly.MainModule.Write(data.LinkedDllLocation);
-                            //patchassembly.MainModule.Write(data.ModDllLocation);
+                            //modassembly.MainModule.Write(data.ModDllLocation);
                         }
                     }
                 }
